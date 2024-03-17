@@ -1,5 +1,5 @@
 #include "ImageCtrl.h"
-
+//Image Control
 CImageCtrl::CImageCtrl(void)
 	: CStatic(), m_pBmp(NULL), m_gdiplusToken(0), m_sizeType(sizeType::SIZE_SCALETOFIT), m_maintainAspectRatio(true), m_aspectRatio(1), m_allignmentType(allignmentType::ALLIGN_MIDDLECENTER), m_isPanMode(TRUE), m_isZoomMode(TRUE), m_bEnbleGrid(TRUE),
 	m_pntFindMarkingPnts(CPoint(-1, -1)), m_bEnbleShapeDrawing(TRUE)
