@@ -28,14 +28,24 @@ protected:
 	void OnClose();
 	void OnGetMinMaxInfo(MINMAXINFO* lpMMI);
 	DECLARE_MESSAGE_MAP()
-
+public:
+	afx_msg void OnBnClickedButtonStartGrab();
+	static UINT ImageGrabberThread(LPVOID Param);
+	void AddImageToQueue(const cv::Mat& image);
+	bool GetNextImageFromQueue(cv::Mat& image);
+	afx_msg LRESULT DoUpdate(WPARAM wParam, LPARAM lParam);
 private:
 	shared_ptr<ChwFetchCameraDetails> m_ptrFetchCameraDetils;
 	shared_ptr<ChwCameraManger> m_ptrCameraManager;
-public:
 	CuiCamImageControl m_ImageControl;
 	CButton m_btnLiveCpature;
 	CButton m_btnStopCapture;
-	afx_msg void OnBnClickedButtonStartGrab();
-	static UINT ImageGrabberThread(LPVOID Param);
+	std::queue<cv::Mat> imageQueue;
+	std::mutex queueMutex;
+	std::atomic<bool> m_bstopThreadFlag
+	{
+		false
+	};
+public:
+	afx_msg void OnBnClickedButtonStopGrab2();
 };

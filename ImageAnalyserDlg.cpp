@@ -63,6 +63,9 @@ BEGIN_MESSAGE_MAP(CImageAnalyserDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CImageAnalyserDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDCANCEL, &CImageAnalyserDlg::OnBnClickedCancel)
 	ON_BN_CLICKED(IDC_BUTTON_START_GRAB, &CImageAnalyserDlg::OnBnClickedButtonStartGrab)
+
+	ON_MESSAGE(UI_CMD_DONE_GRAB, &CImageAnalyserDlg::DoUpdate)
+	ON_BN_CLICKED(IDC_BUTTON_STOP_GRAB2, &CImageAnalyserDlg::OnBnClickedButtonStopGrab2)
 END_MESSAGE_MAP()
 
 
@@ -147,8 +150,8 @@ void CImageAnalyserDlg::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 {
 	CDialogEx::OnGetMinMaxInfo(lpMMI);
 
-	lpMMI->ptMinTrackSize.x = lpMMI->ptMaxTrackSize.x = 950;
-	lpMMI->ptMinTrackSize.y = lpMMI->ptMaxTrackSize.y = 650;
+	lpMMI->ptMinTrackSize.x = lpMMI->ptMaxTrackSize.x = 750;
+	lpMMI->ptMinTrackSize.y = lpMMI->ptMaxTrackSize.y = 600;
 }
 
 void CImageAnalyserDlg::OnBnClickedOk()
@@ -184,7 +187,6 @@ void CImageAnalyserDlg::AlignUIControls()
 }
 
 
-
 void CImageAnalyserDlg::OnClose()
 {
 	int result = AfxMessageBox(_T("Are you want to Close the Application?"), MB_OKCANCEL | MB_ICONQUESTION);
@@ -205,12 +207,48 @@ void CImageAnalyserDlg::OnBnClickedButtonStartGrab()
 
 UINT CImageAnalyserDlg::ImageGrabberThread(LPVOID Param)
 {
-	auto ptrOutSide = (CImageAnalyserDlg*)Param;
+	auto ptrOutside = reinterpret_cast<CImageAnalyserDlg*>(Param);
+	while (!ptrOutside->m_bstopThreadFlag.load(std::memory_order_relaxed))
+	{
+		auto ptrOutSide = (CImageAnalyserDlg*)Param;
 
-	//Want to add Post Message and Handle UI Related action in Post Message
-	cv::Mat SpecReadMat;
-	ptrOutSide->m_ptrCameraManager->SnapGrab(0, SpecReadMat);
-	ptrOutSide->m_ImageControl.SetMatImage(SpecReadMat);
+		cv::Mat SpecReadMat;
+		ptrOutSide->m_ptrCameraManager->SnapGrab(0, SpecReadMat);
+		ptrOutSide->AddImageToQueue(SpecReadMat);
 
+		::PostMessage(ptrOutSide->GetSafeHwnd(), UI_CMD_DONE_GRAB, 0, 0);
+
+		Sleep(1);
+	}
 	return TRUE;
+}
+
+void CImageAnalyserDlg::AddImageToQueue(const cv::Mat& image) {
+	std::lock_guard<std::mutex> lock(queueMutex);
+	imageQueue.push(image);
+}
+
+bool CImageAnalyserDlg::GetNextImageFromQueue(cv::Mat& image) {
+	std::lock_guard<std::mutex> lock(queueMutex);
+	if (!imageQueue.empty()) {
+		image = imageQueue.front();
+		imageQueue.pop();
+		return true;
+	}
+	return false;
+}
+
+LRESULT CImageAnalyserDlg::DoUpdate(WPARAM wParam, LPARAM lParam)
+{
+	cv::Mat SpecReadMat;
+	if (GetNextImageFromQueue(SpecReadMat))
+	{
+		m_ImageControl.SetMatImage(SpecReadMat);
+	}
+	return TRUE;
+}
+
+void CImageAnalyserDlg::OnBnClickedButtonStopGrab2()
+{
+	m_bstopThreadFlag.store(true, std::memory_order_relaxed);
 }

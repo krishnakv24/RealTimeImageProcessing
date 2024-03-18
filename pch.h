@@ -34,4 +34,6 @@ using namespace std;
 using namespace cv;
 using namespace Gdiplus;
 
+#define UI_CMD_DONE_GRAB       (1150)
+
 #endif //PCH_H

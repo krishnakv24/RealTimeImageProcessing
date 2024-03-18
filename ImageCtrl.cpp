@@ -40,7 +40,7 @@ void CImageCtrl::SetImage(Bitmap * Imgptr)
 	CSingleLock sl(&m_CtriUiDraw);
 	sl.Lock();
 	{
-		if (!m_bEnableZoomFit)
+		if (m_bEnableZoomFit)
 		{
 			m_panAtPt.SetPoint(-1, -1);
 			m_panOffset.SetPoint(0, 0);
