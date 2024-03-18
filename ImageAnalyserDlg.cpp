@@ -207,6 +207,7 @@ UINT CImageAnalyserDlg::ImageGrabberThread(LPVOID Param)
 {
 	auto ptrOutSide = (CImageAnalyserDlg*)Param;
 
+	//Want to add Post Message and Handle UI Related action in Post Message
 	cv::Mat SpecReadMat;
 	ptrOutSide->m_ptrCameraManager->SnapGrab(0, SpecReadMat);
 	ptrOutSide->m_ImageControl.SetMatImage(SpecReadMat);
