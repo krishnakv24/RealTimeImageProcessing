@@ -1,4 +1,7 @@
 #pragma once
+#include "uiCamImageControl.h"
+#include "hwFetchCameraDetails.h"
+#include "hwCameraManger.h"
 
 class CImageAnalyserDlg : public CDialogEx
 {
@@ -20,7 +23,19 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
+	void OnSize(UINT nType, int cx, int cy);
+	void AlignUIControls();
 	void OnClose();
 	void OnGetMinMaxInfo(MINMAXINFO* lpMMI);
 	DECLARE_MESSAGE_MAP()
+
+private:
+	shared_ptr<ChwFetchCameraDetails> m_ptrFetchCameraDetils;
+	shared_ptr<ChwCameraManger> m_ptrCameraManager;
+public:
+	CuiCamImageControl m_ImageControl;
+	CButton m_btnLiveCpature;
+	CButton m_btnStopCapture;
+	afx_msg void OnBnClickedButtonStartGrab();
+	static UINT ImageGrabberThread(LPVOID Param);
 };

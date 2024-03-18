@@ -42,6 +42,12 @@
     <ClInclude Include="hwOpenCVImageGraber.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="hwCameraManger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="uiCamImageControl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ImageAnalyser.cpp">
@@ -60,6 +66,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="hwOpenCVImageGraber.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hwCameraManger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uiCamImageControl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
